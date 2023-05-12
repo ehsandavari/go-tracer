@@ -120,6 +120,11 @@ func (r *sTracer) configTracerProviders() error {
 	return nil
 }
 
+type ITracer interface {
+	Shutdown() error
+	Tracer(name string) ISpan
+}
+
 func (r *sTracer) Shutdown() error {
 	return r.tracerProvider.Shutdown(context.Background())
 }
@@ -127,13 +132,4 @@ func (r *sTracer) Shutdown() error {
 func (r *sTracer) Tracer(name string) ISpan {
 	r.tracer = otel.Tracer(name)
 	return r
-}
-
-func (r *sTracer) Start(ctx context.Context, spanName string) context.Context {
-	ctx, r.span = r.tracer.Start(ctx, spanName)
-	return ctx
-}
-
-func (r *sTracer) End() {
-	r.span.End()
 }
