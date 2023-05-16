@@ -1,13 +1,16 @@
 package tracer
 
-type SConfig struct {
-	IsEnabled      bool
-	Host           string
-	Port           string
-	serviceId      int
-	serviceName    string
-	serviceVersion string
-	serviceMode    string
-	Sampler        bool
-	UseStdout      bool
+type sConfig struct {
+	isEnabled         bool
+	sampler           bool
+	useStdout         bool
+	jaegerHost        string
+	jaegerPort        string
+	serviceId         int
+	serviceName       string
+	serviceNamespace  string
+	serviceInstanceId string
+	serviceVersion    string
+	serviceMode       string
+	serviceCommitId   string
 }

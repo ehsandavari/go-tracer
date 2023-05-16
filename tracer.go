@@ -16,7 +16,7 @@ import (
 )
 
 type sTracer struct {
-	config         *SConfig
+	config         *sConfig
 	tracer         trace.Tracer
 	span           trace.Span
 	tracerProvider *traceSdk.TracerProvider
@@ -24,18 +24,19 @@ type sTracer struct {
 	stdExporter    traceSdk.SpanExporter
 }
 
-func NewTracer(isEnabled bool, host string, port string, serviceId int, serviceName string, serviceVersion string, serviceMode string, sampler bool, useStdout bool) ITracer {
+func NewTracer(isEnabled bool, sampler bool, useStdout bool, jaegerHost string, jaegerPort string, serviceId int, serviceName string, serviceVersion string, serviceMode string, serviceCommitId string) ITracer {
 	structTracer := &sTracer{
-		config: &SConfig{
-			IsEnabled:      isEnabled,
-			Host:           host,
-			Port:           port,
-			serviceId:      serviceId,
-			serviceName:    serviceName,
-			serviceVersion: serviceVersion,
-			serviceMode:    serviceMode,
-			Sampler:        sampler,
-			UseStdout:      useStdout,
+		config: &sConfig{
+			isEnabled:       isEnabled,
+			sampler:         sampler,
+			useStdout:       useStdout,
+			jaegerHost:      jaegerHost,
+			jaegerPort:      jaegerPort,
+			serviceId:       serviceId,
+			serviceName:     serviceName,
+			serviceVersion:  serviceVersion,
+			serviceMode:     serviceMode,
+			serviceCommitId: serviceCommitId,
 		},
 	}
 
@@ -59,14 +60,14 @@ func NewTracer(isEnabled bool, host string, port string, serviceId int, serviceN
 
 func (r *sTracer) configExporters() error {
 	jaegerExporter, err := jaeger.New(jaeger.WithAgentEndpoint(
-		jaeger.WithAgentHost(r.config.Host),
-		jaeger.WithAgentPort(r.config.Port),
+		jaeger.WithAgentHost(r.config.jaegerHost),
+		jaeger.WithAgentPort(r.config.jaegerPort),
 	))
 	if err != nil {
 		return err
 	}
 	r.jaegerExporter = jaegerExporter
-	if r.config.UseStdout {
+	if r.config.useStdout {
 		stdExporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 		if err != nil {
 			return err
@@ -79,7 +80,7 @@ func (r *sTracer) configExporters() error {
 
 func (r *sTracer) configTracerProviders() error {
 	sampler := traceSdk.NeverSample()
-	if r.config.Sampler {
+	if r.config.sampler {
 		sampler = traceSdk.AlwaysSample()
 	}
 
@@ -93,9 +94,12 @@ func (r *sTracer) configTracerProviders() error {
 		resource.WithTelemetrySDK(),
 		resource.WithAttributes(
 			semconv.ServiceName(r.config.serviceName),
+			semconv.ServiceNamespace(r.config.serviceNamespace),
+			semconv.ServiceInstanceID(r.config.serviceInstanceId),
 			semconv.ServiceVersion(r.config.serviceVersion),
 			attribute.Int("service.id", r.config.serviceId),
 			attribute.String("service.mode", r.config.serviceMode),
+			attribute.String("service.commit.id", r.config.serviceCommitId),
 		),
 	)
 	if err != nil {
