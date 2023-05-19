@@ -24,19 +24,21 @@ type sTracer struct {
 	stdExporter    traceSdk.SpanExporter
 }
 
-func NewTracer(isEnabled bool, sampler bool, useStdout bool, jaegerHost string, jaegerPort string, serviceId int, serviceName string, serviceVersion string, serviceMode string, serviceCommitId string) ITracer {
+func NewTracer(isEnabled bool, sampler bool, useStdout bool, jaegerHost string, jaegerPort string, serviceId int, serviceName string, serviceNamespace string, serviceInstanceId string, serviceVersion string, serviceMode string, serviceCommitId string) ITracer {
 	structTracer := &sTracer{
 		config: &sConfig{
-			isEnabled:       isEnabled,
-			sampler:         sampler,
-			useStdout:       useStdout,
-			jaegerHost:      jaegerHost,
-			jaegerPort:      jaegerPort,
-			serviceId:       serviceId,
-			serviceName:     serviceName,
-			serviceVersion:  serviceVersion,
-			serviceMode:     serviceMode,
-			serviceCommitId: serviceCommitId,
+			isEnabled:         isEnabled,
+			sampler:           sampler,
+			useStdout:         useStdout,
+			jaegerHost:        jaegerHost,
+			jaegerPort:        jaegerPort,
+			serviceId:         serviceId,
+			serviceName:       serviceName,
+			serviceNamespace:  serviceNamespace,
+			serviceInstanceId: serviceInstanceId,
+			serviceVersion:    serviceVersion,
+			serviceMode:       serviceMode,
+			serviceCommitId:   serviceCommitId,
 		},
 	}
 
