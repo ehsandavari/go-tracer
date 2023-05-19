@@ -3,7 +3,6 @@ package tracer
 import (
 	"context"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type ISpan interface {
@@ -18,12 +17,12 @@ type ISpan interface {
 }
 
 func (r *sTracer) Start(ctx context.Context, spanName string) context.Context {
-	ctx, r.span = r.tracer.Start(ctx, spanName, trace.WithStackTrace(status))
+	ctx, r.span = r.tracer.Start(ctx, spanName)
 	return ctx
 }
 
 func (r *sTracer) AddEvent(name string) {
-	r.span.AddEvent(name, trace.WithStackTrace(status))
+	r.span.AddEvent(name)
 }
 
 func (r *sTracer) IsRecording() bool {
@@ -31,7 +30,7 @@ func (r *sTracer) IsRecording() bool {
 }
 
 func (r *sTracer) RecordError(err error) {
-	r.span.RecordError(err, trace.WithStackTrace(status))
+	r.span.RecordError(err)
 }
 
 func (r *sTracer) TraceId() [16]byte {
