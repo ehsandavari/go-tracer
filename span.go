@@ -18,7 +18,11 @@ type ISpan interface {
 
 func (r *sTracer) Start(ctx context.Context, spanName string) context.Context {
 	ctx, r.span = r.tracer.Start(ctx, spanName)
-	return ctx
+	value, ok := ctx.Value(RequestID).(string)
+	if ok {
+		r.SetString(RequestID, value)
+	}
+	return context.WithValue(ctx, TraceID, r.TraceId())
 }
 
 func (r *sTracer) AddEvent(name string) {
