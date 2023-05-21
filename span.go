@@ -10,7 +10,7 @@ type ISpan interface {
 	AddEvent(name string)
 	IsRecording() bool
 	RecordError(err error)
-	TraceId() [16]byte
+	TraceId() string
 	SetStatus(code codes.Code, description string)
 	IAttribute
 	End()
