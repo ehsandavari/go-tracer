@@ -1,6 +1,6 @@
 package tracer
 
 const (
-	RequestID = "RequestID"
-	TraceID   = "TraceID"
+	RequestId = "RequestId"
+	TraceId   = "TraceId"
 )
