@@ -1,12 +1,12 @@
 package tracer
 
 import (
-	"context"
+	contextplus "github.com/ehsandavari/go-context-plus"
 	"go.opentelemetry.io/otel/codes"
 )
 
 type ISpan interface {
-	Start(ctx context.Context, spanName string) context.Context
+	Start(ctx contextplus.Context, spanName string) contextplus.Context
 	AddEvent(name string)
 	IsRecording() bool
 	RecordError(err error)
@@ -16,13 +16,14 @@ type ISpan interface {
 	End()
 }
 
-func (r *sTracer) Start(ctx context.Context, spanName string) context.Context {
-	ctx, r.span = r.tracer.Start(ctx, spanName)
-	value, ok := ctx.Value(RequestId).(string)
-	if ok {
-		r.SetString(RequestId, value)
+func (r *sTracer) Start(ctx contextplus.Context, spanName string) contextplus.Context {
+	ctx.Context, r.span = r.tracer.Start(ctx.Context, spanName)
+	requestId := ctx.RequestId()
+	if len(requestId) != 0 {
+		r.SetString("RequestId", requestId)
 	}
-	return context.WithValue(ctx, TraceId, r.TraceId())
+	ctx.SetTraceId(r.TraceId())
+	return ctx
 }
 
 func (r *sTracer) AddEvent(name string) {
