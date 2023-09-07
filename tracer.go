@@ -5,7 +5,8 @@ import (
 	"go.opentelemetry.io/contrib/propagators/ot"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -61,10 +62,8 @@ func NewTracer(isEnabled bool, sampler bool, useStdout bool, jaegerHost string, 
 }
 
 func (r *sTracer) configExporters() error {
-	jaegerExporter, err := jaeger.New(jaeger.WithAgentEndpoint(
-		jaeger.WithAgentHost(r.config.jaegerHost),
-		jaeger.WithAgentPort(r.config.jaegerPort),
-	))
+	client := otlptracegrpc.NewClient(otlptracegrpc.WithEndpoint(r.config.jaegerHost+":"+r.config.jaegerPort), otlptracegrpc.WithInsecure())
+	jaegerExporter, err := otlptrace.New(context.Background(), client)
 	if err != nil {
 		return err
 	}

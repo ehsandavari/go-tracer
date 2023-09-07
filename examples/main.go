@@ -22,7 +22,7 @@ func main() {
 		true,
 		false,
 		"localhost",
-		"6831",
+		"4317",
 		12,
 		"test",
 		"sConfig.Service.Namespace",

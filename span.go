@@ -6,7 +6,7 @@ import (
 )
 
 type ISpan interface {
-	Start(ctx contextplus.Context, spanName string) contextplus.Context
+	Start(ctx *contextplus.Context, spanName string) *contextplus.Context
 	AddEvent(name string)
 	IsRecording() bool
 	RecordError(err error)
@@ -16,7 +16,7 @@ type ISpan interface {
 	End()
 }
 
-func (r *sTracer) Start(ctx contextplus.Context, spanName string) contextplus.Context {
+func (r *sTracer) Start(ctx *contextplus.Context, spanName string) *contextplus.Context {
 	ctx.Context, r.span = r.tracer.Start(ctx.Context, spanName)
 	requestId := ctx.RequestId()
 	if len(requestId) != 0 {
